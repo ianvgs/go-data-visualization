@@ -21,92 +21,67 @@ var outputFolder = "./output"
 
 func ReadCSV() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//Declaro estrutura
-		/* var body struct {
-			TextToAnalysis string
-		} */
-		//Faço o Bind
-		/* 	c.BindJSON(&body) */
-		//Lanço o erro se a propriedade nao existir
-		/* if body.TextToAnalysis == "" {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"warning": "Nao foi encontrado os parâmetros necessários para realizar essa tarefa.",
-			})
 
-		} */
-
-		//Open CSV
+		//OS Open CSV
 		csvFile, err := os.Open("data/inventory.csv")
-
-		fmt.Println("Passei aqui")
-
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("Passei aqui 2")
-
+		//Function to close archive on OS
 		defer csvFile.Close()
-		//Read CSV
+		//Transform in dataframe
 		df := dataframe.ReadCSV(csvFile)
-		/* fmt.Println(df) */
-		fmt.Println("Passei aqui 3")
-		//Shape of dataset
-		/* row, col := df.Dims() */
-		/* 	fmt.Println("Shape of df, rows:", row, "columns:", col) */
 
-		/* Tamanho das linhas) */
-		/* 	fmt.Println("Rows:", df.Nrow()) */
+		/* $$$FUNCTIONS$$$ */
 
-		/* Tamanho das colunas*/
-		/* fmt.Println("Cols:", df.Ncol()) */
+		//1)Shape of dataset
+		/*row, col := df.Dims() */
+		/*fmt.Println("Shape of df, rows:", row, "columns:", col) */
 
-		/*Nomes das colunas */
-		/* 		fmt.Println("Nomes:", df.Names()) */
+		/*2)Tamanho das linhas */
+		/*fmt.Println("Rows:", df.Nrow()) */
 
-		/*Tipos das colunas */
-		/* fmt.Println("Tipos:", df.Types()) */
+		/*3)Tamanho das colunas*/
+		/*fmt.Println("Cols:", df.Ncol()) */
 
-		//Criar dataframe
-		/* 	fmt.Println("Describe:", df.Describe()) */
+		/*4)Nomes das colunas */
+		/*fmt.Println("Nomes:", df.Names()) */
 
-		//Selecionar coluna por nome (case sensitive)
-		/* 	fmt.Println("SELECT:", df.Select("Model")) */
+		/*5)Tipos das colunas */
+		/*fmt.Println("Tipos:", df.Types()) */
 
-		//Selecionar coluna por index
-		/* 	fmt.Println("SELECT:", df.Select(0)) */
+		//6)Criar tabela no terminal
+		/*fmt.Println("Describe:", df.Describe()) */
 
-		//Selecionar varias colunas
-		/* var colunas = []string{"Model", "Make"} */
+		//7)Selecionar coluna por nome (case sensitive)
+		/* fmt.Println("SELECT:", df.Select("Model")) */
 
+		//8)Selecionar coluna por index
+		/* fmt.Println("SELECT:", df.Select(0)) */
+
+		//9)Selecionar varias colunas
+		/*var colunas = []string{"Model", "Make"} */
 		/* var colunas = []string
 		colunas = append(colunas, "Model")
 		colunas = append(colunas, "Make") */
-
 		/* 		fmt.Println("SELECT:", df.Select(colunas)) */
 
-		//Selecionar Rows por index
-		/* 	fmt.Println("SELECT ROWS:", df.Subset(0)) */
+		//10)Selecionar Rows por index
+		/* fmt.Println("SELECT ROWS:", df.Subset(0)) */
 
 		//Aplicando FUNÇÕES
 		//ds = data series
+		ds := df.Col("Year")
 
-		ds := df.Col("Make")
-		fmt.Println(ds)
-		fmt.Printf("%T \n", ds)
+		fmt.Println(ds.IsNaN())
 
-		//APPLY FUNCTION MEAN
+		//Mean()
 
-		//Gera o valor
-		/* 	ds := df.Col("Year") */
-		/* 		fmt.Println(ds)
-		   		fmt.Printf("%T \n", ds) */
-		//Gera a media
-		/* 		dsMean := ds.Mean()
-		   		fmt.Println(dsMean)
+		//Gera a media por função do dataframe
+		dsMean := ds.Mean()
+		fmt.Println(dsMean)
 
-		   		fmt.Println(ds.IsNaN()) */
-
-		//using stats for mean
+		//Gera a media utilizando a biblioteca stat
 		statsMean := stat.Mean(ds.Float(), nil)
 		fmt.Println(statsMean)
 
@@ -120,7 +95,7 @@ func ReadCSV() gin.HandlerFunc {
 		fmt.Println(filteredDF)
 
 		c.JSON(http.StatusOK, gin.H{
-			"Result": "è nois que ta",
+			"Result": "Readed CSV",
 		})
 
 	}
@@ -159,7 +134,6 @@ fo i, record := range trainingData {
 } */
 
 func GenerateChartsFromGivenCsvAndTargetColumn() gin.HandlerFunc {
-
 	return func(c *gin.Context) {
 		/* $EXEMPLO ABRIR CSV LOCAL */
 		//Open csv
