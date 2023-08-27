@@ -21,13 +21,9 @@ func HandleRequests() {
 }
 
 func publicRoutes(g *gin.RouterGroup) {
-	/* 	g.GET("/sentimeter", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hello, World!")
-	}) */
 
 	g.GET("/sentiment", sentiment_controller.AnalyseTextSentimeter())
 	g.GET("/csv", data_controller.ReadCSV())
-	g.GET("/plotter", data_controller.Plotter())
 
 	g.GET("/plotter/:filename", func(c *gin.Context) {
 		filename := c.Param("filename")
@@ -49,5 +45,7 @@ func publicRoutes(g *gin.RouterGroup) {
 		// Serve the file as-is
 		c.File(filePath)
 	})
+
+	g.POST("/csver", data_controller.GenerateChartsFromGivenCsvAndTargetColumn())
 
 }

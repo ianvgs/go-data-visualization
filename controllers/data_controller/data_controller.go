@@ -127,27 +127,84 @@ func ReadCSV() gin.HandlerFunc {
 
 }
 
-func Plotter() gin.HandlerFunc {
+/*
+var r regression.regression
+r.SetObserved("rating")
+r.SetVar(0, "Sugars")
+
+//Loop csv records adding the training data
+
+fo i, record := range trainingData {
+
+	//skip the header
+
+	if i == 0 {
+		continue
+	}
+
+	ratingVal, err := strconv.ParseFloat(record[0],64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	sugarsVal, err := strconv.ParseFloat(record[2],64)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Add these point to the regression value
+	r.Train(regression.DataPoint(ratingVal, []float64{sugarsVal}))
+
+
+
+} */
+
+func GenerateChartsFromGivenCsvAndTargetColumn() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-
-		// Create an empty array of strings
-		var linksArray []string
-
+		/* $EXEMPLO ABRIR CSV LOCAL */
 		//Open csv
-		csvFile, err := os.Open("data/float.csv")
+		/* csvFile, err := os.Open("data/float.csv")
 		if err != nil {
 			log.Fatal(err)
-		}
+		} */
 		//Remember to close file when returning this function
-		defer csvFile.Close()
+		/* defer csvFile.Close() */
 
-		df := dataframe.ReadCSV(csvFile)
+		/* $$$ 1) Recebe o csv, a coluna target, abre e lê o arquivo */
 
-		//Label for Y Line
-		yColumnLabel := "Education"
+		//Obtem o valor colTarget do formulário enviado
+		receivedColTarget := c.PostForm("colTarget")
+		if receivedColTarget == "" {
+			c.JSON(400, gin.H{"error": "The property colTarget was not informed in form."})
+			return
+		}
+
+		//Procura pelo csv chamado csv no form
+		csvFile, err := c.FormFile("csv")
+		if err != nil {
+			c.JSON(400, gin.H{"error": "CSV file not provided"})
+			return
+		}
+
+		// Open the uploaded file
+		srcFile, err := csvFile.Open()
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Failed to open uploaded file"})
+			return
+		}
+		defer srcFile.Close()
+
+		//Le no dataframe o csv
+		df := dataframe.ReadCSV(srcFile)
+
+		/* $$$ 2) Formata as entradas necessárias para gerar o gráfico */
+		//Define a labal para os dados/coluna do eixo Y
+		yColumnLabel := receivedColTarget
 		//Assimilate Y Val as selected column above
 		yVals := df.Col(yColumnLabel).Float()
+
+		// Create an empty array of strings to save path to graphs
+		var graphUrls []string
 
 		for _, colName := range df.Names() {
 
@@ -195,10 +252,12 @@ func Plotter() gin.HandlerFunc {
 
 			p.Add(s)
 
-			err = p.Save(4*vg.Inch, 4*vg.Inch, filepath.Join(outputFolder, colName+"_scatter.png"))
+			newFileName := receivedColTarget + "versus" + colName + "_scatter.png"
 
-			str := "localhost:8080/plotter/" + colName + "_scatter.png"
-			linksArray = append(linksArray, str)
+			err = p.Save(4*vg.Inch, 4*vg.Inch, filepath.Join(outputFolder, newFileName))
+
+			endpointString := os.Getenv("API_URL") + "/plotter/" + newFileName
+			graphUrls = append(graphUrls, endpointString)
 
 			if err != nil {
 				log.Fatal(err)
@@ -207,45 +266,9 @@ func Plotter() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"Result": "è nois que ta",
-			"links":  linksArray,
+			"links": graphUrls,
 		})
 
 	}
 
 }
-
-func Buffer() gin.HandlerFunc {
-	return func(c *gin.Context) {}
-}
-
-/*
-var r regression.regression
-r.SetObserved("rating")
-r.SetVar(0, "Sugars")
-
-//Loop csv records adding the training data
-
-fo i, record := range trainingData {
-
-	//skip the header
-
-	if i == 0 {
-		continue
-	}
-
-	ratingVal, err := strconv.ParseFloat(record[0],64)
-	if err != nil {
-		log.Fatal(err)
-	}
-	sugarsVal, err := strconv.ParseFloat(record[2],64)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	//Add these point to the regression value
-	r.Train(regression.DataPoint(ratingVal, []float64{sugarsVal}))
-
-
-
-} */
