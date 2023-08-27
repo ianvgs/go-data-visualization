@@ -1,0 +1,11 @@
+Make,Model,Year,Price,Mileage,Condition,Rating,Value
+Toyota,Camry,2020,25000,15000,Used,4.5,0.85
+Honda,CR-V,2019,28000,18000,Used,4.7,0.75
+Ford,Escape,2022,32000,8000,New,4.8,0.95
+Chevrolet,Impala,2018,20000,25000,Used,4.2,0.65
+Nissan,Altima,2021,27000,12000,Used,4.3,0.78
+Hyundai,Tucson,2023,35000,500,New,4.9,0.88
+Jeep,Wrangler,2020,40000,10000,Used,4.6,0.82
+Kia,Sportage,2021,26000,14000,Used,4.4,0.72
+Subaru,Outback,2019,24000,22000,Used,4.1,0.68
+Mazda,CX-5,2022,30000,7500,New,4.9,0.92
