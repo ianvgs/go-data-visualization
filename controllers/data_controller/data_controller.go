@@ -152,6 +152,9 @@ func GenerateChartsFromGivenCsvAndTargetColumn() gin.HandlerFunc {
 			c.JSON(400, gin.H{"error": "The property colTarget was not informed in form."})
 			return
 		}
+		fmt.Println("RECEBIDO:", receivedColTarget)
+
+		//TODO CHECAR SE A COLUNA INFORMADA EXISTE NO CSV, se nao da pal
 
 		//Procura pelo csv chamado csv no form
 		csvFile, err := c.FormFile("csv")

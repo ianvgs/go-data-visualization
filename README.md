@@ -20,6 +20,9 @@ gorm.io/gorm
 -Nodemon like
 github.com/githubnemo/CompileDaemon 
 
+cors if not using fullstack way
+go get github.com/gin-contrib/cors
+
 CompileDaemon -command="./api"
 
 Estrutura da pastas x packages
